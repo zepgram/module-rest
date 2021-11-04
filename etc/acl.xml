@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+* This file is part of Zepgram\Rest\etc
+*
+* @package    Zepgram\Rest\etc
+* @file       acl.xml
+* @date       04 11 2021 23:20
+*
+* @author     Benjamin Calef <zepgram@gmail.com>
+* @copyright  2021 Zepgram Copyright (c) (https://github.com/zepgram)
+* @license    MIT License
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Zepgram_Rest::zepgram_rest" title="Zepgram Rest Management" translate="true" sortOrder="200"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

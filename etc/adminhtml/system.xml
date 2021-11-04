@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+* This file is part of Zepgram\Rest\etc
+*
+* @package    Zepgram\Rest\etc\adminhtml
+* @file       system.xml
+* @date       04 11 2021 23:20
+*
+* @author     Benjamin Calef <zepgram@gmail.com>
+* @copyright  2021 Zepgram Copyright (c) (https://github.com/zepgram)
+* @license    MIT License
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="rest_api" translate="label" type="text" showInDefault="1" showInWebsite="0"
+                 showInStore="0" sortOrder="1">
+            <label>REST API</label>
+            <tab>zepgram</tab>
+            <resource>Zepgram_Rest::zepgram_rest</resource>
+            <group id="default" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0"
+                   showInStore="0">
+                <label>Default</label>
+                <field id="timeout" translate="label comment" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Timeout</label>
+                    <comment><![CDATA[Default timeout for services in seconds]]></comment>
+                </field>
+                <field id="cache_ttl" translate="label comment" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Cache TTL</label>
+                    <comment><![CDATA[Default cache ttl for services in seconds, used only when cache is implemented]]></comment>
+                </field>
+                <field id="is_debug" translate="label comment" type="select" sortOrder="3" showInDefault="1"
+                       showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enable Debug</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable debug mode to log api request]]></comment>
+                </field>
+                <field id="is_force_debug" translate="label comment" type="select" sortOrder="4" showInDefault="1"
+                       showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Force Debug</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Force debug mode for all services]]></comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

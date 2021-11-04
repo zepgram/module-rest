@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!--
+* This file is part of Zepgram\Rest\etc
+*
+* @package    Zepgram\Rest\etc
+* @file       di.xml
+* @date       04 11 2021 23:20
+*
+* @author     Benjamin Calef <zepgram@gmail.com>
+* @copyright  2021 Zepgram Copyright (c) (https://github.com/zepgram)
+* @license    MIT License
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- logger -->
+    <virtualType name="Zepgram\Rest\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+            <argument name="fileName" xsi:type="string">var/log/zepgram/rest.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Zepgram\Rest\Logger\VirtualRestLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Zepgram\Rest\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Zepgram\Rest\Model\HttpClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Zepgram\Rest\Logger\VirtualRestLogger</argument>
+        </arguments>
+    </type>
+    <!-- preferences -->
+    <preference for="Zepgram\Rest\Model\ParametersInterface" type="Zepgram\Rest\Model\Parameters"/>
+    <preference for="Zepgram\Rest\Service\ApiRequestInterface" type="Zepgram\Rest\Service\ApiRequest"/>
+</config>
