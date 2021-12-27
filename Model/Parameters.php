@@ -142,7 +142,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setConfig(ConfigRequest $configRequest): self
+    public function setConfig(ConfigRequest $configRequest): ParametersInterface
     {
         return $this->setData(self::CONFIG, $configRequest);
     }
