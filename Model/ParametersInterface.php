@@ -49,6 +49,17 @@ interface ParametersInterface
     /**
      * @return string
      */
+    public function getServiceName(): string;
+
+    /**
+     * @param string $serviceName
+     * @return $this
+     */
+    public function setServiceName(string $serviceName): self;
+
+    /**
+     * @return string
+     */
     public function getUri(): string;
 
     /**
@@ -89,17 +100,6 @@ interface ParametersInterface
      * @return $this
      */
     public function setIsJsonResponse(bool $isJsonResponse): self;
-
-    /**
-     * @return string
-     */
-    public function getServiceName(): string;
-
-    /**
-     * @param string $serviceName
-     * @return $this
-     */
-    public function setServiceName(string $serviceName): self;
 
     /**
      * @return array

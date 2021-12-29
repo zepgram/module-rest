@@ -18,9 +18,9 @@
             <label>REST API</label>
             <tab>zepgram</tab>
             <resource>Zepgram_Rest::zepgram_rest</resource>
-            <group id="default" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0"
+            <group id="general" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0"
                    showInStore="0">
-                <label>Default</label>
+                <label>General</label>
                 <field id="timeout" translate="label comment" type="text" sortOrder="1" showInDefault="1"
                        showInWebsite="0" showInStore="0" canRestore="1">
                     <label>Timeout</label>

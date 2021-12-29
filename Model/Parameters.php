@@ -22,6 +22,22 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
+    public function getServiceName(): string
+    {
+        return $this->getData(self::SERVICE_NAME);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setServiceName(string $serviceName): ParametersInterface
+    {
+        return $this->setData(self::SERVICE_NAME, $serviceName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getUri(): string
     {
         return $this->getData(self::URI);
@@ -81,22 +97,6 @@ class Parameters extends DataObject implements ParametersInterface
     public function setIsJsonResponse(bool $isJsonResponse): ParametersInterface
     {
         return $this->setData(self::IS_JSON_RESPONSE, $isJsonResponse);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getServiceName(): string
-    {
-        return $this->getData(self::SERVICE_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setServiceName(string $serviceName): ParametersInterface
-    {
-        return $this->setData(self::SERVICE_NAME, $serviceName);
     }
 
     /**

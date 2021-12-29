@@ -35,9 +35,9 @@ abstract class RequestAdapter
     protected const SERVICE_ENDPOINT = '';
 
     /**
-     * @param DataObject $data
+     * @param DataObject $rawRawData
      */
-    public function dispatch(DataObject $data) //@codingStandardsIgnoreLine
+    public function dispatch(DataObject $rawRawData): void //@codingStandardsIgnoreLine
     {
     }
 
