@@ -3,9 +3,9 @@
 Technical module to industrialize API REST call with dependency injection using Guzzle library.
 Provides multiple features to make your life easier while implementing a REST service as Magento developer:
 - Prevent code duplication with a basic implementation in di.xml (only 1 class to create)
-- Centralize all your REST web service under the same configuration or set a custom one
+- Centralize all your REST web service under the same configuration
 - Benefits built-in registry and cache system to ensure and secure performance
-- Include a generic logger who provides all data with a debug mode option to retrieve parameters, request and result
+- Include a generic logger with a debug mode option to retrieve parameters, request and result
 - Declare your request and result as a json serialized or not, avoiding multiple implementation of the serializer
 
 ## Installation
@@ -17,48 +17,51 @@ bin/magento setup:upgrade
 
 ## Guideline
 
-1. Create a Request Adapter class for your service extending abstract class `Zepgram\Rest\Model\RequestAdapter`, this class represent your service contract adapter:
-    - **public const SERVICE_ENDPOINT**: define the service endpoint
-    - **dispatch(DataObject $data)**: initialize Magento data that you must adapt to request the web service
-    - **getBody()**: implement body request
-    - **getHeaders()**: implement headers
-    - **getUri()**: implement uri endpoint (used to handle dynamic values)
-    - **getCacheKey()**: implement cache key for your specific request (you must define a unique key)
-3. Create a Virtual Class from `Zepgram\Rest\Service\ApiRequest` and customize its injections for your needs 
-   by following the below configuration:
-  
-    | Variable name | Type | Default value | Is Optional | Description |
-    | :---: | :---: | :---: | :---: |  :---: |
-    | serviceName | string | default | no | Value to retrieve group id from system config |
-    | requestAdapter | object | RequestAdapter | no | Adapter class to build and customize the request |
-    | validator | object | null | yes | Validate the service contract |
-    | method | string | GET | yes | Request method |
-    | isJsonRequest | boolean | true | yes | Parse request array to json |
-    | isJsonResponse | boolean | true | yes | Parse response string to array |
-    | isVerify | boolean | true | yes | Enable SSL certificate verification |
-4. Create a system.xml, and a config.xml that must use the **serviceName** injected previously:
+1. Declare your service in di.xml by implementing `Zepgram\Rest\Service\ApiProvider` as VirtualClass, you can configure it by following the [ApiProviderConfig](#xml-config)
+2. Declare your VirtualClass in dedicated Pool `Zepgram\Rest\Service\ApiPoolInterface`, the key used will be your `service_name`
+3. To create your dedicated **ApiRequest** use the **ApiFactory** `$this->apiFactory->create('service_name', $rawData)->sendRequest()` where:
+    - **service_name** represents the service name declared previously in `apiProviders[]`
+    - **$rawData** is an array of dynamic data that you will receive in `dispatch()` method
+4. Create a system.xml, and a config.xml that must use the **configName** injected previously, see [Rest api store config](#store-config):
     - **section**: `rest_api`
-    - **group_id**: `$serviceName`
+    - **group_id**: `$configName`
     - **fields**:
         - `base_uri`
         - `timeout`
         - `is_debug`
         - `cache_ttl`
-5. Go to the class who will run the web service and inject the `Zepgram\Rest\Service\ApiFactory` in his constructor.
-6. Create **ApiRequest** with the **ApiFactory** `$this->apiFactory->create('VirtualClassName', $data)` where:
-   - **VirtualClassName** represents the Virtual Class declared previously in di.xml
-   - **$data** represents the dynamic data that you will receive in `dispatch()` method
-7. Finally, the factory will return your dedicated `ApiRequest` to send the request use the method: `$apiRequest->send()`.
+5. Finally, create a RequestAdapter class for your service extending abstract class `Zepgram\Rest\Model\RequestAdapter`, this class represent your service contract adapter:
+    - **public const SERVICE_ENDPOINT**: define the service endpoint
+    - **dispatch(DataObject $rawData)**: initialize data that you will adapt to request the web service
+    - **getBody()**: implement body request
+    - **getHeaders()**: implement headers
+    - **getUri()**: implement uri endpoint (used to handle dynamic values)
+    - **getCacheKey()**: implement cache key for your specific request (you must define a unique key)
 
 ## Configuration
-
+ 
+### Store config
 ![562](https://user-images.githubusercontent.com/16258478/140424659-f9e1f593-c75f-40fd-aafa-935984c3ae10.png)
 If you do not declare specific configuration, the request will fall back on default configuration.
-To override the default config, you must follow this system config pattern: `rest_api/%service_name%/base_uri`
+To override the default config, you must follow this system config pattern: `rest_api/%configName%/base_uri`
 
-## Example
+### XML config
+You can configure your service with `Zepgram\Rest\Service\ApiProvider` by creating a 
+VirtualClass and customize its injections for your needs by following the below configuration:
 
-Here is a simple implementation example with a service called **Foxtrot** using the order object:
+| Variable name  |  Type   | Default value  | Is Optional |                   Description                    |
+|:--------------:|:-------:|:--------------:|:-----------:|:------------------------------------------------:|
+|   configName   | string  |    default     |     no      |  Value to retrieve group id from system config   |
+| requestAdapter | object  | RequestAdapter |     no      | Adapter class to build and customize the request |
+|   validator    | object  |      null      |     yes     |          Validate the service contract           |
+|     method     | string  |      GET       |     yes     |                  Request method                  |
+| isJsonRequest  | boolean |      true      |     yes     |           Parse request array to json            |
+| isJsonResponse | boolean |      true      |     yes     |          Parse response string to array          |
+|    isVerify    | boolean |      true      |     yes     |       Enable SSL certificate verification        |
+
+## Implementation
+
+Here is a simple implementation example with a service called **Foxtrot** using the order object as rawData:
 
 **FoxtrotOrderRequestAdapter.php**
 
@@ -84,9 +87,9 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
     /**
      * {@inheritDoc}
      */
-    public function dispatch(DataObject $data): void
+    public function dispatch(DataObject $rawData): void
     {
-        $this->order = $data->getOrder();
+        $this->order = $rawData->getOrder();
     }
 
     /**
@@ -137,14 +140,19 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!-- rest api -->
-    <virtualType name="FoxtrotOrderApiRequest" type="Zepgram\Rest\Service\ApiRequest">
+    <virtualType name="FoxtrotOrderApiProvider" type="Zepgram\Rest\Service\ApiProvider">
         <arguments>
-            <argument name="serviceName" xsi:type="string">foxtrot</argument>
+            <argument name="configName" xsi:type="string">foxtrot</argument>
             <argument name="requestAdapter" xsi:type="object">Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter</argument>
-            <argument name="method" xsi:type="const">Laminas\Http\Request::METHOD_POST</argument>
-            <argument name="isVerify" xsi:type="boolean">false</argument>
         </arguments>
     </virtualType>
+    <type name="Zepgram\Rest\Service\ApiPoolInterface">
+        <arguments>
+            <argument name="apiProviders" xsi:type="array">
+                <item name="foxtrot_order" xsi:type="object">FoxtrotOrderApiProvider</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
 ```
 
@@ -236,11 +244,12 @@ class OrderDataExample
     public function execute(int $orderId): void
     {
         try {
+            // load raw data
             $order = $this->orderRepository->get($orderId);
             // prepare request
-            $foxtrotApiRequest = $this->apiFactory->create('FoxtrotOrderApiRequest', ['order' => $order]);
+            $foxtrotApiRequest = $this->apiFactory->create('foxtrot_order', ['order' => $order]);
             // send request
-            $result = $foxtrotApiRequest->send();
+            $result = $foxtrotApiRequest->sendRequest();
             // handle result
             $order->setData('foxtrot_order_result', $result);
             $this->orderRepository->save($order);
@@ -260,7 +269,7 @@ class OrderDataExample
 
 ## Exceptions Bad-Practices
 
-Please do not catch something for nothing when you use this module. For example, if you are doing this:
+Do not catch something for nothing when you use this module. For example, if you are doing this:
 ```php
 try {
     return $apiRequest->send();
@@ -272,14 +281,15 @@ try {
     throw $e;
 }
 ```
-It has no value for the code and for the business because you are throwing the same exception and hiding the real error.
+It has no value for the code because you are throwing the same exception and hiding the real error.
 Try/catch MUST only be used when you are able to handle errors for your feature (detailed logs, retry etc...).
 
 Also, the `Throwable` catch here will never throw.<br>The module only return `Internal` and `External` exception.<br>
 Others exceptions thrown are technical exception, they are returned when you do not implement the module correctly.
 
-To handle ALL exceptions thrown by this module you can catch `Zepgram\Rest\Exception\RestException`
+To handle ALL exceptions thrown by Zepgram_Rest you can simply catch the `Zepgram\Rest\Exception\RestException`
 
-## Issues
+## Issues & Improvements
 
-If you encountered an issue during installation or with usage, please report it on this github repository.
+If you encountered an issue during installation or with usage, please report it on this github repository.<br>
+If you have good ideas to improve this module, feel free to contribute.

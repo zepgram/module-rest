@@ -33,5 +33,7 @@
     </type>
     <!-- preferences -->
     <preference for="Zepgram\Rest\Model\ParametersInterface" type="Zepgram\Rest\Model\Parameters"/>
+    <preference for="Zepgram\Rest\Service\ApiPoolInterface" type="Zepgram\Rest\Service\ApiPool"/>
+    <preference for="Zepgram\Rest\Service\ApiProviderInterface" type="Zepgram\Rest\Service\ApiProvider"/>
     <preference for="Zepgram\Rest\Service\ApiRequestInterface" type="Zepgram\Rest\Service\ApiRequest"/>
 </config>

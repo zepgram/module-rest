@@ -14,12 +14,12 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <rest_api>
-            <default>
+            <general>
                 <timeout>5</timeout>
                 <cache_ttl>3600</cache_ttl>
                 <is_debug>1</is_debug>
                 <is_force_debug>0</is_force_debug>
-            </default>
+            </general>
         </rest_api>
     </default>
 </config>

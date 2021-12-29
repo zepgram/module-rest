@@ -3,8 +3,8 @@
  * This file is part of Zepgram\Rest\Service
  *
  * @package    Zepgram\Rest\Service
- * @file       ApiRequestInterface.php
- * @date       04 11 2021 23:40
+ * @file       ApiProviderInterface.php
+ * @date       28 12 2021 23:15
  *
  * @author     Benjamin Calef <zepgram@gmail.com>
  * @copyright  2021 Zepgram Copyright (c) (https://github.com/zepgram)
@@ -15,21 +15,21 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Service;
 
-use Zepgram\Rest\Exception\ExternalException;
-use Zepgram\Rest\Exception\InternalException;
+use Magento\Framework\DataObject;
 use Zepgram\Rest\Exception\Technical\InvalidContractException;
 use Zepgram\Rest\Exception\Technical\LogicException;
 use Zepgram\Rest\Exception\Technical\MissingBaseUriException;
+use Zepgram\Rest\Model\ParametersInterface;
 
-interface ApiRequestInterface
+interface ApiProviderInterface
 {
     /**
+     * @param DataObject $rawData
+     * @param string $serviceName
+     * @return ParametersInterface
      * @throws InvalidContractException
      * @throws LogicException
      * @throws MissingBaseUriException
-     * @throws ExternalException
-     * @throws InternalException
-     * @return mixed
      */
-    public function sendRequest();
+    public function build(DataObject $rawData, string $serviceName): ParametersInterface;
 }

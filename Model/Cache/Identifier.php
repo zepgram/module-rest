@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Zepgram\Rest\Model\Cache;
 
 use Magento\Framework\Encryption\Encryptor;
+use Magento\Framework\Serialize\SerializerInterface;
 use Zepgram\Rest\Model\ParametersInterface;
 
 class Identifier
@@ -23,12 +24,19 @@ class Identifier
     /** @var Encryptor */
     private $encryptor;
 
+    /** @var SerializerInterface */
+    private $serializer;
+
     /**
      * @param Encryptor $encryptor
+     * @param SerializerInterface $serializer
      */
-    public function __construct(Encryptor $encryptor)
-    {
+    public function __construct(
+        Encryptor $encryptor,
+        SerializerInterface $serializer
+    ) {
         $this->encryptor = $encryptor;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -42,11 +50,32 @@ class Identifier
 
     /**
      * @param string $serviceName
-     * @param $data
+     * @param array $data
      * @return string
      */
-    public function getRegistryKey(string $serviceName, $data): string
+    public function getRegistryKey(string $serviceName, array $data): string
     {
-        return $this->encryptor->hash($serviceName . '_' . $data);
+        $extractedData = $this->recursiveExtract($data);
+
+        return $this->encryptor->hash($serviceName . '_' . $this->serializer->serialize($extractedData));
+    }
+
+    /**
+     * @param $value
+     * @return array|mixed
+     */
+    private function recursiveExtract($value)
+    {
+        if (is_object($value) && method_exists($value, 'toArray')) {
+            return $value->toArray();
+        }
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $value[$k] = $this->recursiveExtract($v);
+            }
+            return $value;
+        }
+
+        return $value;
     }
 }

@@ -35,24 +35,24 @@ class ConfigRequest
     public const REST_API_DEFAULT_IS_FORCE_DEBUG = 'rest_api/default/is_force_debug';
 
     /** @var string */
-    public const REST_API_CONFIG_DEFAULT = 'default';
+    public const REST_API_CONFIG_DEFAULT = 'general';
 
     /** @var ScopeConfigInterface */
     private $scopeConfig;
 
     /** @var string */
-    private $serviceName;
+    private $configName;
 
     /**
      * @param ScopeConfigInterface $scopeConfig
-     * @param string $serviceName
+     * @param string $configName
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        string $serviceName = self::REST_API_CONFIG_DEFAULT
+        string $configName
     ) {
         $this->scopeConfig = $scopeConfig;
-        $this->serviceName = $serviceName;
+        $this->configName = $configName;
     }
 
     /**
@@ -61,7 +61,7 @@ class ConfigRequest
     public function getBaseUri(): string
     {
         return $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_BASE_URI, $this->serviceName)
+            sprintf(self::REST_API_SERVICE_BASE_URI, $this->configName)
         );
     }
 
@@ -71,7 +71,7 @@ class ConfigRequest
     public function getTimeout(): int
     {
         $timeout = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_TIMEOUT, $this->serviceName)
+            sprintf(self::REST_API_SERVICE_TIMEOUT, $this->configName)
         );
         if ($timeout === null) {
             $timeout = $this->scopeConfig->getValue(
@@ -88,7 +88,7 @@ class ConfigRequest
     public function getCacheLifetime(): int
     {
         $cacheLifetime = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_CACHE_TTL, $this->serviceName)
+            sprintf(self::REST_API_SERVICE_CACHE_TTL, $this->configName)
         );
         if ($cacheLifetime === null) {
             $cacheLifetime = $this->scopeConfig->getValue(
@@ -109,7 +109,7 @@ class ConfigRequest
         }
 
         $debugEnabled = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_IS_DEBUG, $this->serviceName)
+            sprintf(self::REST_API_SERVICE_IS_DEBUG, $this->configName)
         );
         if ($debugEnabled === null) {
             $debugEnabled = $this->scopeConfig->getValue(
