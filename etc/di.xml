@@ -36,4 +36,9 @@
     <preference for="Zepgram\Rest\Service\ApiPoolInterface" type="Zepgram\Rest\Service\ApiPool"/>
     <preference for="Zepgram\Rest\Service\ApiProviderInterface" type="Zepgram\Rest\Service\ApiProvider"/>
     <preference for="Zepgram\Rest\Service\ApiRequestInterface" type="Zepgram\Rest\Service\ApiRequest"/>
+    <type name="Zepgram\Rest\Service\ApiFactory">
+        <arguments>
+            <argument name="apiPool" xsi:type="object">Zepgram\Rest\Service\ApiPoolInterface\Proxy</argument>
+        </arguments>
+    </type>
 </config>
