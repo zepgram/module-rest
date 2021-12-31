@@ -19,7 +19,7 @@ bin/magento setup:upgrade
 
 1. Declare your service in di.xml by implementing `Zepgram\Rest\Service\ApiProvider` as VirtualClass, you can configure it by following the [ApiProviderConfig](#xml-config)
 2. Declare your VirtualClass in dedicated Pool `Zepgram\Rest\Service\ApiPoolInterface`, the key used will be your `service_name`
-3. To create your dedicated **ApiRequest** use the **ApiFactory** `$this->apiFactory->create('service_name', $rawData)->sendRequest()` where:
+3. To create your dedicated **ApiRequest** use the **ApiFactory** `$this->apiFactory->get('service_name', $rawData)->sendRequest()` where:
     - **service_name** represents the service name declared previously in `apiProviders[]`
     - **$rawData** is an array of dynamic data that you will receive in `dispatch()` method
 4. Create a system.xml, and a config.xml that must use the **configName** injected previously, see [Rest api store config](#store-config):
@@ -247,7 +247,7 @@ class OrderDataExample
             // load raw data
             $order = $this->orderRepository->get($orderId);
             // prepare request
-            $foxtrotApiRequest = $this->apiFactory->create('foxtrot_order', ['order' => $order]);
+            $foxtrotApiRequest = $this->apiFactory->get('foxtrot_order', ['order' => $order]);
             // send request
             $result = $foxtrotApiRequest->sendRequest();
             // handle result

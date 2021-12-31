@@ -68,12 +68,21 @@ class ApiFactory
             return $this->apiRequestRegistry[$registryKey];
         }
 
-        $apiRequest = $this->objectManager->create(ApiRequestInterface::class, [
+        return $this->apiRequestRegistry[$registryKey] = $this->create($serviceName, $rawData);
+    }
+
+    /**
+     * @param string $serviceName
+     * @param mixed $rawData
+     * @return ApiRequestInterface
+     * @throws LogicException
+     */
+    private function create(string $serviceName, array $rawData = []): ApiRequestInterface
+    {
+        return $this->objectManager->create(ApiRequestInterface::class, [
             'apiProvider' => $this->apiPool->getApiProvider($serviceName),
             'rawData' => $this->dataObjectFactory->create($rawData),
             'serviceName' => $serviceName
         ]);
-
-        return $this->apiRequestRegistry[$registryKey] = $apiRequest;
     }
 }
