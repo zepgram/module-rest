@@ -31,5 +31,5 @@ interface ApiRequestInterface
      * @throws InternalException
      * @return mixed
      */
-    public function sendRequest();
+    public function sendRequest(): mixed;
 }

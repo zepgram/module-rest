@@ -108,28 +108,9 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
     /**
      * {@inheritDoc}
      */
-    public function getHeaders(): array
-    {
-        return [
-            self::HEADER_ACCEPT => self::CONTENT_JSON,
-            self::HEADER_CONTENT_TYPE => self::CONTENT_JSON,
-        ];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getUri(): ?string
-    {
-        return self::SERVICE_ENDPOINT;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getCacheKey(): ?string
     {
-        return null;
+        return $this->order->getEntityId();
     }
 }
 ```
@@ -222,19 +203,10 @@ use Zepgram\Sales\Api\OrderRepositoryInterface;
 
 class OrderDataExample
 {
-    /** @var OrderRepositoryInterface */
-    private $orderRepository;
-        
-    /** @var ApiFactory */
-    private $apiFactory;
-
     public function __construct(
-        OrderRepositoryInterface $orderRepository,
-        ApiFactory $apiFactory
-    ) {
-        $this->orderRepository = $orderRepository;
-        $this->apiFactory = $apiFactory;
-    }
+        private OrderRepositoryInterface $orderRepository,
+        private ApiFactory $apiFactory
+    ) {}
 
     /**
      * @param int $orderId
@@ -244,14 +216,14 @@ class OrderDataExample
     public function execute(int $orderId): void
     {
         try {
-            // load raw data
+            // get raw data
             $order = $this->orderRepository->get($orderId);
-            // prepare request
+            // transform data
             $foxtrotApiRequest = $this->apiFactory->get('foxtrot_order', ['order' => $order]);
             // send request
-            $result = $foxtrotApiRequest->sendRequest();
+            $foxtrotOrderResult = $foxtrotApiRequest->sendRequest();
             // handle result
-            $order->setData('foxtrot_order_result', $result);
+            $order->setFoxtrotData($foxtrotOrderResult);
             $this->orderRepository->save($order);
         } catch (ExternalException $e) {
              $context['context_error'] = 'We could not reach foxtrot order service'

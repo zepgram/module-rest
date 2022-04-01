@@ -16,70 +16,44 @@ declare(strict_types=1);
 namespace Zepgram\Rest\Service;
 
 use Magento\Framework\DataObject;
+use Magento\Framework\Event\ManagerInterface;
 use Zepgram\Rest\Model\HttpClient;
 
 class ApiRequest implements ApiRequestInterface
 {
-    /** @var HttpClient */
-    private $httpClient;
+    private mixed $result = false;
 
-    /** @var ApiProviderInterface */
-    private $apiProvider;
-
-    /** @var array */
-    private $rawData;
-
-    /** @var string */
-    private $serviceName;
-
-    /** @var mixed */
-    private $result = false;
-
-    /**
-     * @param HttpClient $httpClient
-     * @param ApiProviderInterface $apiProvider
-     * @param DataObject $rawData
-     * @param string $serviceName
-     */
     public function __construct(
-        HttpClient $httpClient,
-        ApiProviderInterface $apiProvider,
-        DataObject $rawData,
-        string $serviceName
-    ) {
-        $this->httpClient = $httpClient;
-        $this->apiProvider = $apiProvider;
-        $this->rawData = $rawData;
-        $this->serviceName = $serviceName;
-    }
+        private HttpClient $httpClient,
+        private ApiProviderInterface $apiProvider,
+        private ManagerInterface $eventManager,
+        private DataObject $rawData,
+        private string $serviceName
+    ) {}
 
     /**
      * {@inheritDoc}
      */
-    public function sendRequest()
+    public function sendRequest(): string|int|bool|array|null|float
     {
         if ($result = $this->getResult()) {
             return $result;
         }
 
+        $this->eventManager->dispatch($this->serviceName . '_send_before', ['raw_data' => $this->rawData]);
         $parameters = $this->apiProvider->build($this->rawData, $this->serviceName);
         $result = $this->httpClient->request($parameters);
+        $this->eventManager->dispatch($this->serviceName . '_send_after', ['result' => $result]);
         $this->setResult($result);
 
         return $result;
     }
 
-    /**
-     * @return mixed
-     */
-    private function getResult()
+    private function getResult(): string|int|bool|array|null|float
     {
         return $this->result;
     }
 
-    /**
-     * @param mixed $result
-     */
     private function setResult($result): void
     {
         $this->result = $result;

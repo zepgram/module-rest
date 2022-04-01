@@ -26,9 +26,6 @@ class RestApiCache extends TagScope
     /** @var string */
     public const CACHE_TAG = 'REST_API_RESULT';
 
-    /**
-     * @param FrontendPool $cacheFrontendPool
-     */
     public function __construct(FrontendPool $cacheFrontendPool)
     {
         parent::__construct($cacheFrontendPool->get(self::TYPE_IDENTIFIER), self::CACHE_TAG);

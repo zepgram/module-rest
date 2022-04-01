@@ -18,7 +18,7 @@ namespace Zepgram\Rest\Model;
 use Magento\Framework\DataObject;
 
 /**
- * @method DataObject toArray()
+ * @method array toArray()
  */
 interface ParametersInterface
 {

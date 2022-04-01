@@ -37,23 +37,10 @@ class ConfigRequest
     /** @var string */
     public const REST_API_CONFIG_DEFAULT = 'general';
 
-    /** @var ScopeConfigInterface */
-    private $scopeConfig;
-
-    /** @var string */
-    private $configName;
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     * @param string $configName
-     */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        string $configName
-    ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->configName = $configName;
-    }
+        private ScopeConfigInterface $scopeConfig,
+        private string $configName
+    ) {}
 
     /**
      * @return string

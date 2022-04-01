@@ -21,23 +21,10 @@ use Zepgram\Rest\Model\ParametersInterface;
 
 class Identifier
 {
-    /** @var Encryptor */
-    private $encryptor;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /**
-     * @param Encryptor $encryptor
-     * @param SerializerInterface $serializer
-     */
     public function __construct(
-        Encryptor $encryptor,
-        SerializerInterface $serializer
-    ) {
-        $this->encryptor = $encryptor;
-        $this->serializer = $serializer;
-    }
+        private Encryptor $encryptor,
+        private SerializerInterface $serializer
+    ) {}
 
     /**
      * @param ParametersInterface $parameters
@@ -62,9 +49,9 @@ class Identifier
 
     /**
      * @param $value
-     * @return array|mixed
+     * @return mixed
      */
-    private function recursiveExtract($value)
+    private function recursiveExtract($value): mixed
     {
         if (is_object($value) && method_exists($value, 'toArray')) {
             return $value->toArray();

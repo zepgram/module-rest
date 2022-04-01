@@ -22,42 +22,18 @@ use Zepgram\Rest\Model\Cache\Identifier;
 
 class ApiFactory
 {
-    /** @var ObjectManagerInterface */
-    private $objectManager;
+    private array $apiRequestRegistry;
 
-    /** @var ApiPoolInterface */
-    private $apiPool;
-
-    /** @var Identifier */
-    private $identifier;
-
-    /** @var DataObjectFactory */
-    private $dataObjectFactory;
-
-    /** @var array */
-    private $apiRequestRegistry;
-
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @param ApiPoolInterface $apiPool
-     * @param Identifier $identifier
-     * @param DataObjectFactory $dataObjectFactory
-     */
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        ApiPoolInterface $apiPool,
-        Identifier $identifier,
-        DataObjectFactory $dataObjectFactory
-    ) {
-        $this->objectManager = $objectManager;
-        $this->apiPool = $apiPool;
-        $this->identifier = $identifier;
-        $this->dataObjectFactory = $dataObjectFactory;
-    }
+        private ObjectManagerInterface $objectManager,
+        private ApiPoolInterface $apiPool,
+        private Identifier $identifier,
+        private DataObjectFactory $dataObjectFactory
+    ) {}
 
     /**
      * @param string $serviceName
-     * @param mixed $rawData
+     * @param array $rawData
      * @return ApiRequestInterface
      * @throws LogicException
      */

@@ -32,59 +32,18 @@ use Zepgram\Rest\Model\RequestAdapter;
 
 class ApiProvider implements ApiProviderInterface
 {
-    /** @var ParametersInterfaceFactory */
-    private $parametersFactory;
-
-    /** @var ConfigRequestFactory */
-    private $configRequestFactory;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var RequestAdapter */
-    private $requestAdapter;
-
-    /** @var string */
-    private $configName;
-
-    /** @var string */
-    private $method;
-
-    /** @var bool */
-    private $isVerify;
-
-    /** @var bool */
-    private $isJsonRequest;
-
-    /** @var bool */
-    private $isJsonResponse;
-
-    /** @var Validator|null */
-    private $validator;
-
     public function __construct(
-        ParametersInterfaceFactory $parametersFactory,
-        ConfigRequestFactory $configRequestFactory,
-        SerializerInterface $serializer,
-        RequestAdapter $requestAdapter,
-        string $configName = ConfigRequest::REST_API_CONFIG_DEFAULT,
-        string $method = Request::METHOD_GET,
-        bool $isVerify = true,
-        bool $isJsonRequest = true,
-        bool $isJsonResponse = true,
-        Validator $validator = null
-    ) {
-        $this->parametersFactory = $parametersFactory;
-        $this->configRequestFactory = $configRequestFactory;
-        $this->serializer = $serializer;
-        $this->requestAdapter = $requestAdapter;
-        $this->configName = $configName;
-        $this->method = $method;
-        $this->isVerify = $isVerify;
-        $this->isJsonRequest = $isJsonRequest;
-        $this->isJsonResponse = $isJsonResponse;
-        $this->validator = $validator;
-    }
+        private ParametersInterfaceFactory $parametersFactory,
+        private ConfigRequestFactory $configRequestFactory,
+        private SerializerInterface $serializer,
+        private RequestAdapter $requestAdapter,
+        private string $configName = ConfigRequest::REST_API_CONFIG_DEFAULT,
+        private string $method = Request::METHOD_GET,
+        private bool $isVerify = true,
+        private bool $isJsonRequest = true,
+        private bool $isJsonResponse = true,
+        private ?Validator $validator = null
+    ) {}
 
     /**
      * {@inheritDoc}

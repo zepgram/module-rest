@@ -26,7 +26,7 @@ abstract class RequestAdapter
     protected const HEADER_CONTENT_TYPE = 'Content-Type';
 
     /** @var string */
-    protected const CONTENT_JSON = 'application/json';
+    protected const CONTENT_TYPE = 'application/json';
 
     /** @var string */
     protected const HEADER_ACCEPT_LANGUAGE = 'Accept-Language';
@@ -55,8 +55,8 @@ abstract class RequestAdapter
     public function getHeaders(): array
     {
         return [
-            self::HEADER_ACCEPT => self::CONTENT_JSON,
-            self::HEADER_CONTENT_TYPE => self::CONTENT_JSON
+            self::HEADER_ACCEPT => static::CONTENT_TYPE,
+            self::HEADER_CONTENT_TYPE => static::CONTENT_TYPE
         ];
     }
 

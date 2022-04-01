@@ -34,42 +34,21 @@ use Zepgram\Rest\Model\Cache\RestApiCache;
 
 class HttpClient
 {
-    /** @var GuzzleClient */
-    private $guzzleClientFactory;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var RestApiCache */
-    private $restApiCache;
-
-    /** @var Identifier */
-    private $identifier;
-
-    /** @var LoggerInterface */
-    private $logger;
-
     public function __construct(
-        GuzzleClientFactory $guzzleClientFactory,
-        SerializerInterface $serializer,
-        RestApiCache $restApiCache,
-        Identifier $identifier,
-        LoggerInterface $logger
-    ) {
-        $this->guzzleClientFactory = $guzzleClientFactory;
-        $this->serializer = $serializer;
-        $this->restApiCache = $restApiCache;
-        $this->identifier = $identifier;
-        $this->logger = $logger;
-    }
+        private GuzzleClientFactory $guzzleClientFactory,
+        private SerializerInterface $serializer,
+        private RestApiCache $restApiCache,
+        private Identifier $identifier,
+        private LoggerInterface $logger
+    ) {}
 
     /**
      * @param ParametersInterface $parameters
-     * @return array|bool|float|int|string|null
+     * @return string|int|bool|array|null|float
      * @throws ExternalException
      * @throws InternalException
      */
-    public function request(ParametersInterface $parameters)
+    public function request(ParametersInterface $parameters): string|int|bool|array|null|float
     {
         $config = $parameters->getConfig();
         $context['method'] = __METHOD__;
@@ -169,9 +148,9 @@ class HttpClient
 
     /**
      * @param ParametersInterface $parameters
-     * @return array|bool|float|int|string|null
+     * @return string|int|bool|array|null|float
      */
-    private function getCache(ParametersInterface $parameters)
+    private function getCache(ParametersInterface $parameters): string|int|bool|array|null|float
     {
         $cacheKey = $this->identifier->getCacheKey($parameters);
         $cache = $this->restApiCache->load($cacheKey);

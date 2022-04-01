@@ -19,16 +19,9 @@ use Zepgram\Rest\Exception\Technical\LogicException;
 
 class ApiPool implements ApiPoolInterface
 {
-    /** @var array */
-    private $apiProviders;
-
-    /**
-     * @param array $apiProviders
-     */
-    public function __construct(array $apiProviders = [])
-    {
-        $this->apiProviders = $apiProviders;
-    }
+    public function __construct(
+        private array $apiProviders = []
+    ) {}
 
     /**
      * {@inheritDoc}
