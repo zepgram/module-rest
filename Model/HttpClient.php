@@ -25,7 +25,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use Zepgram\Rest\Exception\ExternalException;
 use Zepgram\Rest\Exception\InternalException;
-use Zepgram\Rest\Exception\Result\BusinessException;
+use Zepgram\Rest\Exception\Result\ServiceException;
 use Zepgram\Rest\Exception\Result\HttpException;
 use Zepgram\Rest\Exception\Result\NotFoundException;
 use Zepgram\Rest\Exception\Result\UnserializeException;
@@ -110,7 +110,7 @@ class HttpClient
     /**
      * @param ParametersInterface $parameters
      * @return ResponseInterface
-     * @throws BusinessException
+     * @throws ServiceException
      * @throws HttpException
      * @throws NotFoundException
      */
@@ -138,7 +138,7 @@ class HttpClient
                 throw new NotFoundException(__('[REST API] %1 not found: %2', $serviceName, $body), $e, $e->getCode());
             }
             if (!empty($body) && $e->getCode() < 500) {
-                throw new BusinessException(__('[REST API] %1 error: %2', $serviceName, $body), $e, $e->getCode());
+                throw new ServiceException(__('[REST API] %1 error: %2', $serviceName, $body), $e, $e->getCode());
             }
             throw new HttpException(__('[REST API] %1', $serviceName), $e, $e->getCode());
         } catch (Throwable $e) {
