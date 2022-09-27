@@ -15,9 +15,9 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Exception\Result;
 
-use Zepgram\Rest\Exception\InternalException;
+use Zepgram\Rest\Exception\ExternalException;
 
-class BusinessException extends InternalException
+class ServiceException extends ExternalException
 {
 
 }
