@@ -13,8 +13,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="rest_api" translate="label" type="text" showInDefault="1" showInWebsite="0"
-                 showInStore="0" sortOrder="1">
+        <section id="rest_api" translate="label" type="text" showInDefault="1" showInWebsite="1"
+                 showInStore="1" sortOrder="1">
             <label>REST API</label>
             <tab>zepgram</tab>
             <resource>Zepgram_Rest::zepgram_rest</resource>
