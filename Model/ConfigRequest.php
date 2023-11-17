@@ -20,22 +20,22 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 class ConfigRequest
 {
     /** @var string */
-    public const REST_API_SERVICE_BASE_URI = 'rest_api/%s/base_uri';
+    public const XML_CONFIG_REST_API_SERVICE_BASE_URI = 'rest_api/%s/base_uri';
 
     /** @var string */
-    public const REST_API_SERVICE_TIMEOUT = 'rest_api/%s/timeout';
+    public const XML_CONFIG_REST_API_SERVICE_TIMEOUT = 'rest_api/%s/timeout';
 
     /** @var string */
-    public const REST_API_SERVICE_IS_DEBUG = 'rest_api/%s/is_debug';
+    public const XML_CONFIG_REST_API_SERVICE_IS_DEBUG = 'rest_api/%s/is_debug';
 
     /** @var string */
-    public const REST_API_SERVICE_CACHE_TTL = 'rest_api/%s/cache_ttl';
+    public const XML_CONFIG_REST_API_SERVICE_CACHE_TTL = 'rest_api/%s/cache_ttl';
 
     /** @var string */
-    public const REST_API_DEFAULT_IS_FORCE_DEBUG = 'rest_api/default/is_force_debug';
+    public const XML_CONFIG_REST_API_GENERAL_IS_FORCE_DEBUG = 'rest_api/general/is_force_debug';
 
     /** @var string */
-    public const REST_API_CONFIG_DEFAULT = 'general';
+    public const XML_CONFIG_REST_API_GROUP_GENERAL = 'general';
 
     /** @var ScopeConfigInterface */
     private $scopeConfig;
@@ -61,7 +61,7 @@ class ConfigRequest
     public function getBaseUri(): string
     {
         return $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_BASE_URI, $this->configName)
+            sprintf(self::XML_CONFIG_REST_API_SERVICE_BASE_URI, $this->configName)
         );
     }
 
@@ -71,11 +71,11 @@ class ConfigRequest
     public function getTimeout(): int
     {
         $timeout = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_TIMEOUT, $this->configName)
+            sprintf(self::XML_CONFIG_REST_API_SERVICE_TIMEOUT, $this->configName)
         );
         if ($timeout === null) {
             $timeout = $this->scopeConfig->getValue(
-                sprintf(self::REST_API_SERVICE_TIMEOUT, self::REST_API_CONFIG_DEFAULT)
+                sprintf(self::XML_CONFIG_REST_API_SERVICE_TIMEOUT, self::XML_CONFIG_REST_API_GROUP_GENERAL)
             );
         }
 
@@ -88,11 +88,11 @@ class ConfigRequest
     public function getCacheLifetime(): int
     {
         $cacheLifetime = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_CACHE_TTL, $this->configName)
+            sprintf(self::XML_CONFIG_REST_API_SERVICE_CACHE_TTL, $this->configName)
         );
         if ($cacheLifetime === null) {
             $cacheLifetime = $this->scopeConfig->getValue(
-                sprintf(self::REST_API_SERVICE_CACHE_TTL, self::REST_API_CONFIG_DEFAULT)
+                sprintf(self::XML_CONFIG_REST_API_SERVICE_CACHE_TTL, self::XML_CONFIG_REST_API_GROUP_GENERAL)
             );
         }
 
@@ -104,16 +104,16 @@ class ConfigRequest
      */
     public function isDebugEnabled(): bool
     {
-        if ($this->scopeConfig->isSetFlag(self::REST_API_DEFAULT_IS_FORCE_DEBUG)) {
+        if ($this->scopeConfig->isSetFlag(self::XML_CONFIG_REST_API_GENERAL_IS_FORCE_DEBUG)) {
             return true;
         }
 
         $debugEnabled = $this->scopeConfig->getValue(
-            sprintf(self::REST_API_SERVICE_IS_DEBUG, $this->configName)
+            sprintf(self::XML_CONFIG_REST_API_SERVICE_IS_DEBUG, $this->configName)
         );
         if ($debugEnabled === null) {
             $debugEnabled = $this->scopeConfig->getValue(
-                sprintf(self::REST_API_SERVICE_IS_DEBUG, self::REST_API_CONFIG_DEFAULT)
+                sprintf(self::XML_CONFIG_REST_API_SERVICE_IS_DEBUG, self::XML_CONFIG_REST_API_GROUP_GENERAL)
             );
         }
 
