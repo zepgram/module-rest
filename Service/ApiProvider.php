@@ -37,7 +37,7 @@ class ApiProvider implements ApiProviderInterface
         private ConfigRequestFactory $configRequestFactory,
         private SerializerInterface $serializer,
         private RequestAdapter $requestAdapter,
-        private string $configName = ConfigRequest::REST_API_CONFIG_DEFAULT,
+        private string $configName = ConfigRequest::XML_CONFIG_REST_API_GROUP_GENERAL,
         private string $method = Request::METHOD_GET,
         private bool $isVerify = true,
         private bool $isJsonRequest = true,
@@ -100,7 +100,7 @@ class ApiProvider implements ApiProviderInterface
      */
     protected function buildConfigRequest(): ConfigRequest
     {
-        if ($this->getConfigName() === ConfigRequest::REST_API_CONFIG_DEFAULT) {
+        if ($this->getConfigName() === ConfigRequest::XML_CONFIG_REST_API_GROUP_GENERAL) {
             throw new LogicException(__('ConfigName parameter is missing and must be injected'));
         }
 
