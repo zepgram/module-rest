@@ -17,22 +17,22 @@ namespace Zepgram\Rest\Model;
 
 use Magento\Framework\DataObject;
 
-class Parameters extends DataObject implements ParametersInterface
+class Request extends DataObject implements RequestInterface
 {
     /**
      * {@inheritDoc}
      */
-    public function getServiceName(): string
+    public function getAdapterName(): string
     {
-        return $this->getData(self::SERVICE_NAME);
+        return $this->getData(self::ADAPTER_NAME);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setServiceName(string $serviceName): ParametersInterface
+    public function setAdapterName(string $adapterName): RequestInterface
     {
-        return $this->setData(self::SERVICE_NAME, $serviceName);
+        return $this->setData(self::ADAPTER_NAME, $adapterName);
     }
 
     /**
@@ -46,7 +46,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setUri(string $uri): ParametersInterface
+    public function setUri(string $uri): RequestInterface
     {
         return $this->setData(self::URI, $uri);
     }
@@ -62,7 +62,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setMethod(string $method): ParametersInterface
+    public function setMethod(string $method): RequestInterface
     {
         return $this->setData(self::METHOD, $method);
     }
@@ -78,7 +78,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setIsJsonRequest(bool $isJsonRequest): ParametersInterface
+    public function setIsJsonRequest(bool $isJsonRequest): RequestInterface
     {
         return $this->setData(self::IS_JSON_REQUEST, $isJsonRequest);
     }
@@ -94,7 +94,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setIsJsonResponse(bool $isJsonResponse): ParametersInterface
+    public function setIsJsonResponse(bool $isJsonResponse): RequestInterface
     {
         return $this->setData(self::IS_JSON_RESPONSE, $isJsonResponse);
     }
@@ -110,7 +110,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setOptions(array $options): ParametersInterface
+    public function setOptions(array $options): RequestInterface
     {
         return $this->setData(self::OPTIONS, $options);
     }
@@ -126,7 +126,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setCacheKey(?string $cacheKey): ParametersInterface
+    public function setCacheKey(?string $cacheKey): RequestInterface
     {
         return $this->setData(self::CACHE_KEY, $cacheKey);
     }
@@ -142,7 +142,7 @@ class Parameters extends DataObject implements ParametersInterface
     /**
      * {@inheritDoc}
      */
-    public function setConfig(ConfigRequest $configRequest): ParametersInterface
+    public function setConfig(ConfigRequest $configRequest): RequestInterface
     {
         return $this->setData(self::CONFIG, $configRequest);
     }

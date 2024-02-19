@@ -18,7 +18,8 @@
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Zepgram_Rest::zepgram_rest" title="Zepgram Rest Management" translate="true" sortOrder="200"/>
+                            <resource id="Zepgram_Rest::zepgram_rest" title="Zepgram Rest Management" translate="true"
+                                      sortOrder="200"/>
                         </resource>
                     </resource>
                 </resource>

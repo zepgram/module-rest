@@ -32,13 +32,8 @@
         </arguments>
     </type>
     <!-- preferences -->
-    <preference for="Zepgram\Rest\Model\ParametersInterface" type="Zepgram\Rest\Model\Parameters"/>
-    <preference for="Zepgram\Rest\Service\ApiPoolInterface" type="Zepgram\Rest\Service\ApiPool"/>
+    <preference for="Zepgram\Rest\Model\RequestInterface" type="Zepgram\Rest\Model\Request"/>
+    <preference for="Zepgram\Rest\Model\RequestAdapterInterface" type="Zepgram\Rest\Model\RequestAdapter"/>
     <preference for="Zepgram\Rest\Service\ApiProviderInterface" type="Zepgram\Rest\Service\ApiProvider"/>
-    <preference for="Zepgram\Rest\Service\ApiRequestInterface" type="Zepgram\Rest\Service\ApiRequest"/>
-    <type name="Zepgram\Rest\Service\ApiFactory">
-        <arguments>
-            <argument name="apiPool" xsi:type="object">Zepgram\Rest\Service\ApiPoolInterface\Proxy</argument>
-        </arguments>
-    </type>
+    <preference for="Zepgram\Rest\Service\ApiPoolInterface" type="Zepgram\Rest\Service\ApiPool"/>
 </config>
