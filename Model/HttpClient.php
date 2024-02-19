@@ -25,9 +25,9 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use Zepgram\Rest\Exception\ExternalException;
 use Zepgram\Rest\Exception\InternalException;
-use Zepgram\Rest\Exception\Result\ServiceException;
 use Zepgram\Rest\Exception\Result\HttpException;
 use Zepgram\Rest\Exception\Result\NotFoundException;
+use Zepgram\Rest\Exception\Result\ServiceException;
 use Zepgram\Rest\Exception\Result\UnserializeException;
 use Zepgram\Rest\Model\Cache\Identifier;
 use Zepgram\Rest\Model\Cache\RestApiCache;
@@ -40,52 +40,53 @@ class HttpClient
         private RestApiCache $restApiCache,
         private Identifier $identifier,
         private LoggerInterface $logger
-    ) {}
+    ) {
+    }
 
     /**
-     * @param ParametersInterface $parameters
+     * @param RequestInterface $request
      * @return string|int|bool|array|null|float
      * @throws ExternalException
      * @throws InternalException
      */
-    public function request(ParametersInterface $parameters): string|int|bool|array|null|float
+    public function request(RequestInterface $request): string|int|bool|array|null|float
     {
-        $config = $parameters->getConfig();
+        $config = $request->getConfig();
         $context['method'] = __METHOD__;
-        $context['request'] = array_merge(['base_uri' => $config->getBaseUri()], $parameters->toArray());
-        $serviceName = $parameters->getServiceName();
+        $context['request'] = array_merge(['base_uri' => $config->getBaseUri()], $request->toArray());
+        $adapterName = $request->getAdapterName();
         if ($config->isDebugEnabled()) {
-            $this->logger->info(sprintf('[REST API] %s request', $serviceName), $context);
+            $this->logger->info(sprintf('[REST API] %s request', $adapterName), $context);
         }
 
         try {
-            if ($parameters->getCacheKey() && $result = $this->getCache($parameters)) {
+            if ($request->getCacheKey() && $result = $this->getCache($request)) {
                 if ($config->isDebugEnabled()) {
                     $context['response'] = $result;
-                    $this->logger->info(sprintf('[REST API] %s cache', $serviceName), $context);
+                    $this->logger->info(sprintf('[REST API] %s cache', $adapterName), $context);
                 }
                 return $result;
             }
 
-            $response = $this->guzzleRequest($parameters);
+            $response = $this->guzzleRequest($request);
             $code = $response->getStatusCode();
-            $body = (string) $response->getBody();
+            $body = (string)$response->getBody();
             $context['code'] = $code;
             $context['headers'] = $response->getHeaders();
 
             try {
-                $result = $parameters->getIsJsonResponse() ? $this->serializer->unserialize($body) : $body;
+                $result = $request->getIsJsonResponse() ? $this->serializer->unserialize($body) : $body;
                 $context['response'] = $result;
             } catch (InvalidArgumentException $e) {
-                throw new UnserializeException(__('[REST API] %1', $serviceName), $e);
+                throw new UnserializeException(__('[REST API] %1', $adapterName), $e);
             }
 
-            if ($parameters->getCacheKey()) {
-                $this->saveCache($parameters, $result);
+            if ($request->getCacheKey()) {
+                $this->saveCache($request, $result);
             }
 
             if ($config->isDebugEnabled()) {
-                $this->logger->info(sprintf('[REST API] %s response', $serviceName), $context);
+                $this->logger->info(sprintf('[REST API] %s response', $adapterName), $context);
             }
 
             return $result;
@@ -95,45 +96,60 @@ class HttpClient
                     $this->logger->info($e, $context);
                 }
             } else {
-                $this->logger->alert($e, $context);
+                $this->logger->critical($e, $context);
             }
             throw $e;
         } catch (InternalException $e) {
-            $this->logger->emergency($e, $context);
+            $this->logger->critical($e, $context);
             throw $e;
         } catch (Throwable $e) {
-            $this->logger->emergency($e, $context);
+            $this->logger->critical($e, $context);
             throw new InternalException(__($e->getMessage()));
         }
     }
 
     /**
-     * @param ParametersInterface $parameters
+     * @param RequestInterface $request
+     * @return string|int|bool|array|null|float
+     */
+    private function getCache(RequestInterface $request): string|int|bool|array|null|float
+    {
+        $cacheKey = $this->identifier->getCacheKey($request);
+        $cache = $this->restApiCache->load($cacheKey);
+        if (!$cache) {
+            return false;
+        }
+
+        return $this->serializer->unserialize($cache);
+    }
+
+    /**
+     * @param RequestInterface $request
      * @return ResponseInterface
      * @throws ServiceException
      * @throws HttpException
      * @throws NotFoundException
      */
-    private function guzzleRequest(ParametersInterface $parameters): ResponseInterface
+    private function guzzleRequest(RequestInterface $request): ResponseInterface
     {
         /** @var GuzzleClient $client */
         $client = $this->guzzleClientFactory->create([
             'config' => [
-                'base_uri' => $parameters->getConfig()->getBaseUri(),
-                'timeout' => $parameters->getConfig()->getTimeout()
+                'base_uri' => $request->getConfig()->getBaseUri(),
+                'timeout' => $request->getConfig()->getTimeout()
             ]
         ]);
-        $serviceName = $parameters->getServiceName();
+        $serviceName = $request->getAdapterName();
 
         try {
             return $client->request(
-                $parameters->getMethod(),
-                $parameters->getUri(),
-                $parameters->getOptions()
+                $request->getMethod(),
+                $request->getUri(),
+                $request->getOptions()
             );
         } catch (RequestException $e) {
             $response = $e->getResponse();
-            $body = $response && $response->getBody() ? (string) $response->getBody() : null;
+            $body = $response && $response->getBody() ? (string)$response->getBody() : null;
             if ($e->getCode() === 404) {
                 throw new NotFoundException(__('[REST API] %1 not found: %2', $serviceName, $body), $e, $e->getCode());
             }
@@ -147,28 +163,13 @@ class HttpClient
     }
 
     /**
-     * @param ParametersInterface $parameters
-     * @return string|int|bool|array|null|float
-     */
-    private function getCache(ParametersInterface $parameters): string|int|bool|array|null|float
-    {
-        $cacheKey = $this->identifier->getCacheKey($parameters);
-        $cache = $this->restApiCache->load($cacheKey);
-        if (!$cache) {
-            return false;
-        }
-
-        return $this->serializer->unserialize($cache);
-    }
-
-    /**
-     * @param ParametersInterface $parameters
+     * @param RequestInterface $request
      * @param $result
      */
-    private function saveCache(ParametersInterface $parameters, $result): void
+    private function saveCache(RequestInterface $request, $result): void
     {
-        $cacheKey = $this->identifier->getCacheKey($parameters);
+        $cacheKey = $this->identifier->getCacheKey($request);
         $data = $this->serializer->serialize($result);
-        $this->restApiCache->save($data, $cacheKey, [], $parameters->getConfig()->getCacheLifetime());
+        $this->restApiCache->save($data, $cacheKey, [], $request->getConfig()->getCacheLifetime());
     }
 }

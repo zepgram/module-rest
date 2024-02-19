@@ -1,52 +1,124 @@
 # Zepgram Rest
 
-Technical module to industrialize API REST call with dependency injection using Guzzle library.
-Provides multiple features to make your life easier while implementing a REST service as Magento developer:
-- Prevent code duplication with a basic implementation in di.xml (only 1 class to create)
-- Centralize all your REST web service under the same configuration
-- Benefits built-in registry and cache system to ensure and secure performance
-- Include a generic logger with a debug mode option to retrieve parameters, request and result
-- Declare your request and result as a json serialized or not, avoiding multiple implementation of the serializer
+## Overview
+Zepgram Rest is a technical module designed to streamline the development of REST API integrations in Magento 2 projects.
+Utilizing the Guzzle HTTP client for dependency injection, this module offers a robust set of features aimed at reducing 
+boilerplate code, improving performance, and enhancing debugging capabilities. By centralizing REST API interactions and 
+leveraging Magento's built-in systems, Zepgram Rest simplifies the implementation process for developers.
+
+## Features
+Zepgram Rest provides several key features to aid Magento developers in creating and managing RESTful services:
+- <b>Avoid Code Duplication:</b> Minimize repetitive code with a straightforward setup in di.xml. Implement your REST API integrations with just one class creation, streamlining the development process.
+- <b>Centralized Configuration:</b> Manage all your REST web services configurations in one place, ensuring consistency and ease of maintenance.
+- <b>Built-in Registry and Cache:</b> Take advantage of Magento's native registry and cache mechanisms to boost your API's performance and security. This feature helps in efficiently managing data retrieval and storage, reducing the load on your server.
+- <b>Generic Logger:</b> Debugging is made effortless with an inclusive logging system. Enable the debug mode to log detailed information about your API calls, including parameters, requests, and responses, facilitating easier troubleshooting.
+- <b>Data Serialization:</b> Declare whether your requests and results should be JSON serialized or not. This flexibility prevents the need for multiple serializer implementations, accommodating various API requirements with ease.
 
 ## Installation
+
 ```
 composer require zepgram/module-rest
 bin/magento module:enable Zepgram_Rest
 bin/magento setup:upgrade
 ```
 
-## Guideline
+## Guideline with ApiPool
 
-1. Declare your service in di.xml by implementing `Zepgram\Rest\Service\ApiProvider` as VirtualClass, you can configure it by following the [ApiProviderConfig](#xml-config)
-2. Declare your VirtualClass in dedicated Pool `Zepgram\Rest\Service\ApiPoolInterface`, the key used will be your `service_name`
-3. To create your dedicated **ApiRequest** use the **ApiFactory** `$this->apiFactory->get('service_name', $rawData)->sendRequest()` where:
-    - **service_name** represents the service name declared previously in `apiProviders[]`
-    - **$rawData** is an array of dynamic data that you will receive in `dispatch()` method
-4. Create a system.xml, and a config.xml that must use the **configName** injected previously, see [Rest api store config](#store-config):
-    - **section**: `rest_api`
-    - **group_id**: `$configName`
-    - **fields**:
-        - `base_uri`
-        - `timeout`
-        - `is_debug`
-        - `cache_ttl`
-5. Finally, create a RequestAdapter class for your service extending abstract class `Zepgram\Rest\Model\RequestAdapter`, this class represent your service contract adapter:
-    - **public const SERVICE_ENDPOINT**: define the service endpoint
-    - **dispatch(DataObject $rawData)**: initialize data that you will adapt to request the web service
-    - **getBody()**: implement body request
-    - **getHeaders()**: implement headers
-    - **getUri()**: implement uri endpoint (used to handle dynamic values)
-    - **getCacheKey()**: implement cache key for your specific request (you must define a unique key)
+1. Create a RequestAdapter class for your service extending abstract class `Zepgram\Rest\Model\RequestAdapter`,
+   this class represent your service contract adapter:
+   - **public const SERVICE_ENDPOINT**: define the service endpoint
+   - **dispatch(DataObject $rawData)**: initialize data that you will adapt to request the web service
+   - **getBody()**: implement body request
+   - **getHeaders()**: implement headers
+   - **getUri()**: implement uri endpoint (used to handle dynamic values)
+   - **getCacheKey()**: implement cache key for your specific request (you must define a unique key)
+1. Create a system.xml, and a config.xml with a dedicated **configName**:
+   - **section**: `rest_api`
+   - **group_id**: `$configName`
+   - **fields**:
+      - `base_uri`
+      - `timeout`
+      - `is_debug`
+      - `cache_ttl`
+1. Declare your service in di.xml by implementing `Zepgram\Rest\Service\ApiProvider` as VirtualClass, you can configure
+   it by following the [ApiProviderConfig](#configuration)
+1. Declare your RequestAdapter and ApiProvider in `Zepgram\Rest\Service\ApiPoolInterface`:
+    - Add a new item in `apiProviders[]`:
+      - The **key** is your custom RequestAdapter full namespace
+      - The **value** is your ApiProvider as a VirtualClass
+1. Inject ApiPoolInterface in the class that will consume your API and use `$this->apiPool->execute(RequestAdapter::class, $rawData)` where:
+    - **RequestAdapter::class** represents the request adapter declared in `apiProviders[]`
+    - **$rawData** is an array of dynamic data that will be dispatch in `dispatch()` method
+
+## Basic guideline implementation
+
+Instead of declaring your class in `Zepgram\Rest\Service\ApiPoolInterface` you can also directly inject
+your ApiProvider in a dedicated class:
+```xml
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- rest api -->
+    <virtualType name="CustomApiProvider" type="Zepgram\Rest\Service\ApiProvider">
+        <arguments>
+            <argument name="requestAdapter" xsi:type="object">Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter</argument>
+            <argument name="configName" xsi:type="string">foxtrot</argument>
+        </arguments>
+    </virtualType>
+    <type name="My\Custom\Model\ConsumerExample">
+        <arguments>
+            <argument name="apiProvider" xsi:type="object">CustomApiProvider</argument>
+        </arguments>
+    </type>
+</config>
+```
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace My\Custom\Model\Api;
+
+use Zepgram\Rest\Exception\InternalException;
+use Zepgram\Rest\Exception\ExternalException;
+use Zepgram\Rest\Service\ApiPoolInterface;
+use Zepgram\Rest\Service\ApiProviderInterface;use Zepgram\Sales\Api\OrderRepositoryInterface;
+
+class ConsumerExample
+{
+    public function __construct(
+        private OrderRepositoryInterface $orderRepository,
+        private ApiProviderInterface $apiProvider
+    ) {}
+
+    /**
+     * @param int $orderId
+     * @return array 
+     */
+    public function execute(int $orderId): array
+    {
+        // get raw data
+        $order = $this->orderRepository->get($orderId);
+        // send request
+        $result = $this->apiProvider->execute(['order' => $order]);
+        
+        return $result;
+    }
+}
+```
 
 ## Configuration
- 
+
 ### Store config
+
 ![562](https://user-images.githubusercontent.com/16258478/140424659-f9e1f593-c75f-40fd-aafa-935984c3ae10.png)
 If you do not declare specific configuration, the request will fall back on default configuration.
 To override the default config, you must follow this system config pattern: `rest_api/%configName%/base_uri`
 
 ### XML config
-You can configure your service with `Zepgram\Rest\Service\ApiProvider` by creating a 
+
+You can configure your service with `Zepgram\Rest\Service\ApiProvider` by creating a
 VirtualClass and customize its injections for your needs by following the below configuration:
 
 | Variable name  |  Type   | Default value  | Is Optional |                   Description                    |
@@ -115,29 +187,8 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
 }
 ```
 
-**di.xml**
-```xml
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <!-- rest api -->
-    <virtualType name="FoxtrotOrderApiProvider" type="Zepgram\Rest\Service\ApiProvider">
-        <arguments>
-            <argument name="configName" xsi:type="string">foxtrot</argument>
-            <argument name="requestAdapter" xsi:type="object">Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter</argument>
-        </arguments>
-    </virtualType>
-    <type name="Zepgram\Rest\Service\ApiPoolInterface">
-        <arguments>
-            <argument name="apiProviders" xsi:type="array">
-                <item name="foxtrot_order" xsi:type="object">FoxtrotOrderApiProvider</item>
-            </argument>
-        </arguments>
-    </type>
-</config>
-```
-
 **system.xml**
+
 ```xml
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -171,6 +222,7 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
 ```
 
 **config.xml**
+
 ```xml
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
@@ -187,6 +239,29 @@ class FoxtrotOrderRequestAdapter extends RequestAdapter
 </config>
 ```
 
+**di.xml**
+
+```xml
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+   <!-- rest api -->
+   <virtualType name="FoxtrotOrderApiProvider" type="Zepgram\Rest\Service\ApiProvider">
+      <arguments>
+         <argument name="requestAdapter" xsi:type="object">Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter</argument>
+         <argument name="configName" xsi:type="string">foxtrot</argument>
+      </arguments>
+   </virtualType>
+   <type name="Zepgram\Rest\Service\ApiPoolInterface">
+      <arguments>
+         <argument name="apiProviders" xsi:type="array">
+            <item name="Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter" xsi:type="object">FoxtrotOrderApiProvider</item>
+         </argument>
+      </arguments>
+   </type>
+</config>
+```
+
 **OrderDataExample.php**
 
 ```php
@@ -198,14 +273,15 @@ namespace Zepgram\Sales\Model;
 
 use Zepgram\Rest\Exception\InternalException;
 use Zepgram\Rest\Exception\ExternalException;
-use Zepgram\Rest\Service\ApiFactory;
+use Zepgram\Rest\Service\ApiPoolInterface;
 use Zepgram\Sales\Api\OrderRepositoryInterface;
+use Zepgram\Sales\Rest\FoxtrotOrderRequestAdapter;
 
 class OrderDataExample
 {
     public function __construct(
         private OrderRepositoryInterface $orderRepository,
-        private ApiFactory $apiFactory
+        private ApiPoolInterface $apiPool
     ) {}
 
     /**
@@ -218,48 +294,24 @@ class OrderDataExample
         try {
             // get raw data
             $order = $this->orderRepository->get($orderId);
-            // transform data
-            $foxtrotApiRequest = $this->apiFactory->get('foxtrot_order', ['order' => $order]);
             // send request
-            $foxtrotOrderResult = $foxtrotApiRequest->sendRequest();
+            $result = $this->apiPool->execute(FoxtrotOrderRequestAdapter::class, ['order' => $order]);
             // handle result
-            $order->setFoxtrotData($foxtrotOrderResult);
+            $order->setFoxtrotData($result);
             $this->orderRepository->save($order);
+        } catch (InternalException $e) {
+            $context['context_error'] = 'Magento request is wrong, foxtrot order service could not handle it'
+            // service rejected request for business reason: do something (log, throw, errorMessage..)
+            throw MyAwesomeBusinessException(__('Bad request error'), $e);
         } catch (ExternalException $e) {
              $context['context_error'] = 'We could not reach foxtrot order service'
              // service is unavailable due to technical reason: do something (log, throw, errorMessage..)
              $this->logger->error($e, $context);
              throw MyAwesomeTechnicalException(__('Foxtrot server error'), $e);
-        } catch (InternalException $e) {
-            $context['context_error'] = 'Magento request is wrong, foxtrot order service could not handle it'
-            // service rejected request for business reason: do something (log, throw, errorMessage..)
-            throw MyAwesomeBusinessException(__('Bad request error'), $e);
         }
     }
 }
 ```
-
-## Exceptions Bad-Practices
-
-Do not catch something for nothing when you use this module. For example, if you are doing this:
-```php
-try {
-    return $apiRequest->send();
-} catch (InternalException $e) {
-    throw new InternalException(__('Internal error'));
-} catch (ExternalException $e) {
-    throw new ExternalException(__('External error'));
-} catch (Throwable $e) {
-    throw $e;
-}
-```
-It has no value for the code because you are throwing the same exception and hiding the real error.
-Try/catch MUST only be used when you are able to handle errors for your feature (detailed logs, retry etc...).
-
-Also, the `Throwable` catch here will never throw.<br>The module only return `Internal` and `External` exception.<br>
-Others exceptions thrown are technical exception, they are returned when you do not implement the module correctly.
-
-To handle ALL exceptions thrown by Zepgram_Rest you can simply catch the `Zepgram\Rest\Exception\RestException`
 
 ## Issues & Improvements
 

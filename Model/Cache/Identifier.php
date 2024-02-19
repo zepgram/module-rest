@@ -17,22 +17,23 @@ namespace Zepgram\Rest\Model\Cache;
 
 use Magento\Framework\Encryption\Encryptor;
 use Magento\Framework\Serialize\SerializerInterface;
-use Zepgram\Rest\Model\ParametersInterface;
+use Zepgram\Rest\Model\RequestInterface;
 
 class Identifier
 {
     public function __construct(
         private Encryptor $encryptor,
         private SerializerInterface $serializer
-    ) {}
+    ) {
+    }
 
     /**
-     * @param ParametersInterface $parameters
+     * @param RequestInterface $parameters
      * @return string
      */
-    public function getCacheKey(ParametersInterface $parameters): string
+    public function getCacheKey(RequestInterface $parameters): string
     {
-        return $this->encryptor->hash($parameters->getServiceName() . '_' . $parameters->getCacheKey());
+        return $this->encryptor->hash($parameters->getAdapterName() . '_' . $parameters->getCacheKey());
     }
 
     /**

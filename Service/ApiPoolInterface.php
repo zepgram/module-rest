@@ -15,16 +15,12 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Service;
 
-use Zepgram\Rest\Exception\Technical\LogicException;
-
 interface ApiPoolInterface
 {
     /**
-     * Retrieve api provider pool
-     *
-     * @param string $serviceName
-     * @return ApiProviderInterface
-     * @throws LogicException
+     * @param string $adapterName
+     * @param array $rawData
+     * @return mixed
      */
-    public function getApiProvider(string $serviceName): ApiProviderInterface;
+    public function execute(string $adapterName, array $rawData = []): mixed;
 }

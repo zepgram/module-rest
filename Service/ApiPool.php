@@ -15,32 +15,36 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Service;
 
+use ReflectionClass;
 use Zepgram\Rest\Exception\Technical\LogicException;
+use Zepgram\Rest\Model\RequestAdapter;
 
 class ApiPool implements ApiPoolInterface
 {
     public function __construct(
         private array $apiProviders = []
-    ) {}
+    ) {
+    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getApiProvider(string $serviceName): ApiProviderInterface
+    public function execute(string $adapterName, array $rawData = []): mixed
     {
-        if (isset($this->apiProviders[$serviceName])) {
-            /** @var ApiProviderInterface $apiProvider */
-            $apiProvider = $this->apiProviders[$serviceName];
+        $requestAdapterName = new ReflectionClass($adapterName);
+        if (!$requestAdapterName->isSubclassOf(RequestAdapter::class)) {
+            throw new LogicException(__($requestAdapterName . ' must be an instance of RequestAdapter'));
+        }
+
+        if (isset($this->apiProviders[$adapterName])) {
+            $apiProvider = $this->apiProviders[$adapterName];
             $apiProviderName = get_class($apiProvider);
             if (!$apiProvider instanceof ApiProviderInterface) {
                 throw new LogicException(__($apiProviderName . ' must be an instance of ApiProviderInterface'));
             }
-            
-            return $apiProvider;
-        };
+
+            return $apiProvider->execute($rawData);
+        }
 
         throw new LogicException(
-            __('Api Provider class could not be found from service name ' . $serviceName)
+            __('Api Provider class could not be found from request adapter ' . $adapterName)
         );
     }
 }

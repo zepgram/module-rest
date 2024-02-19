@@ -15,12 +15,10 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Model;
 
-use Magento\Framework\DataObject;
-
 /**
  * @method array toArray()
  */
-interface ParametersInterface
+interface RequestInterface
 {
     /** @var string */
     public const URI = 'uri';
@@ -35,7 +33,7 @@ interface ParametersInterface
     public const IS_JSON_RESPONSE = 'is_json_response';
 
     /** @var string */
-    public const SERVICE_NAME = 'service_name';
+    public const ADAPTER_NAME = 'adapter_name';
 
     /** @var string */
     public const OPTIONS = 'options';
@@ -49,13 +47,13 @@ interface ParametersInterface
     /**
      * @return string
      */
-    public function getServiceName(): string;
+    public function getAdapterName(): string;
 
     /**
-     * @param string $serviceName
+     * @param string $adapterName
      * @return $this
      */
-    public function setServiceName(string $serviceName): self;
+    public function setAdapterName(string $adapterName): self;
 
     /**
      * @return string
