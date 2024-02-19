@@ -110,21 +110,6 @@ class HttpClient
 
     /**
      * @param RequestInterface $request
-     * @return string|int|bool|array|null|float
-     */
-    private function getCache(RequestInterface $request): string|int|bool|array|null|float
-    {
-        $cacheKey = $this->identifier->getCacheKey($request);
-        $cache = $this->restApiCache->load($cacheKey);
-        if (!$cache) {
-            return false;
-        }
-
-        return $this->serializer->unserialize($cache);
-    }
-
-    /**
-     * @param RequestInterface $request
      * @return ResponseInterface
      * @throws ServiceException
      * @throws HttpException
@@ -160,6 +145,21 @@ class HttpClient
         } catch (Throwable $e) {
             throw new HttpException(__('[REST API] %1', $serviceName), $e, $e->getCode());
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return string|int|bool|array|null|float
+     */
+    private function getCache(RequestInterface $request): string|int|bool|array|null|float
+    {
+        $cacheKey = $this->identifier->getCacheKey($request);
+        $cache = $this->restApiCache->load($cacheKey);
+        if (!$cache) {
+            return false;
+        }
+
+        return $this->serializer->unserialize($cache);
     }
 
     /**
