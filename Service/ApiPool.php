@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Zepgram\Rest\Service;
 
 use ReflectionClass;
+use ReflectionException;
 use Zepgram\Rest\Exception\Technical\LogicException;
 use Zepgram\Rest\Model\RequestAdapter;
 
@@ -26,9 +27,17 @@ class ApiPool implements ApiPoolInterface
     ) {
     }
 
+    /**
+     * @inheirtDoc
+     */
     public function execute(string $adapterName, array $rawData = []): mixed
     {
-        $requestAdapterName = new ReflectionClass($adapterName);
+        try {
+            $requestAdapterName = new ReflectionClass($adapterName);
+        } catch (ReflectionException $e) {
+            throw new LogicException(__($adapterName . ' must be an instance of RequestAdapter'), $e);
+        }
+
         if (!$requestAdapterName->isSubclassOf(RequestAdapter::class)) {
             throw new LogicException(__($requestAdapterName . ' must be an instance of RequestAdapter'));
         }

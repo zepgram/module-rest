@@ -15,12 +15,23 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Service;
 
+use Zepgram\Rest\Exception\ExternalException;
+use Zepgram\Rest\Exception\InternalException;
+use Zepgram\Rest\Exception\Technical\InvalidContractException;
+use Zepgram\Rest\Exception\Technical\LogicException;
+use Zepgram\Rest\Exception\Technical\MissingBaseUriException;
+
 interface ApiPoolInterface
 {
     /**
      * @param string $adapterName
      * @param array $rawData
      * @return mixed
+     * @throws InternalException
+     * @throws InvalidContractException
+     * @throws LogicException
+     * @throws MissingBaseUriException
+     * @throws ExternalException
      */
     public function execute(string $adapterName, array $rawData = []): mixed;
 }
