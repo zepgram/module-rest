@@ -17,35 +17,50 @@ namespace Zepgram\Rest\Model\Cache;
 
 use Magento\Framework\Encryption\Encryptor;
 use Magento\Framework\Serialize\SerializerInterface;
+use Zepgram\Rest\Model\AdapterNameResolver;
+use Zepgram\Rest\Model\RequestAdapter;
 use Zepgram\Rest\Model\RequestInterface;
 
 class Identifier
 {
     public function __construct(
         private Encryptor $encryptor,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
+        private AdapterNameResolver $adapterNameResolver
     ) {
     }
 
     /**
-     * @param RequestInterface $parameters
+     * @param RequestInterface $request
      * @return string
      */
-    public function getCacheKey(RequestInterface $parameters): string
+    public function getCacheKey(RequestInterface $request): string
     {
-        return $this->encryptor->hash($parameters->getAdapterName() . '_' . $parameters->getCacheKey());
+        return $this->encryptor->hash($request->getAdapterName() . '_' . $request->getCacheKey());
     }
 
     /**
-     * @param string $serviceName
+     * @param string $requestAdapter
+     * @param string $cacheKey
+     * @return string
+     */
+    public function getCacheKeyByRequestAdapter(string $requestAdapter, string $cacheKey): string
+    {
+        $adapterName = $this->adapterNameResolver->getAdapterName($requestAdapter);
+
+        return $this->encryptor->hash($adapterName . '_' . $cacheKey);
+    }
+
+    /**
+     * @param string $adapterName
      * @param array $data
      * @return string
      */
-    public function getRegistryKey(string $serviceName, array $data): string
+    public function getRegistryKey(string $adapterName, array $data): string
     {
         $extractedData = $this->recursiveExtract($data);
 
-        return $this->encryptor->hash($serviceName . '_' . $this->serializer->serialize($extractedData));
+        return $this->encryptor->hash($adapterName . '_' . $this->serializer->serialize($extractedData));
     }
 
     /**

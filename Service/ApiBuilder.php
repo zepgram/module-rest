@@ -64,7 +64,7 @@ class ApiBuilder
      */
     public function sendRequest(ApiProviderInterface $apiProvider, array $rawData): mixed
     {
-        $adapterName = $this->adapterNameResolver->getAdapterName($apiProvider->getRequestAdapter());
+        $adapterName = $this->adapterNameResolver->getAdapterName($apiProvider->getRequestAdapter()::class);
         $registryKey = $this->identifier->getRegistryKey($adapterName, $rawData);
         if (isset($this->apiRequestRegistry[$registryKey])) {
             return $this->apiRequestRegistry[$registryKey];

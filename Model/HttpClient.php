@@ -124,7 +124,7 @@ class HttpClient
                 'timeout' => $request->getConfig()->getTimeout()
             ]
         ]);
-        $serviceName = $request->getAdapterName();
+        $adapterName = $request->getAdapterName();
 
         try {
             return $client->request(
@@ -136,14 +136,14 @@ class HttpClient
             $response = $e->getResponse();
             $body = $response && $response->getBody() ? (string)$response->getBody() : null;
             if ($e->getCode() === 404) {
-                throw new NotFoundException(__('[REST API] %1 not found: %2', $serviceName, $body), $e, $e->getCode());
+                throw new NotFoundException(__('[REST API] %1 not found: %2', $adapterName, $body), $e, $e->getCode());
             }
             if (!empty($body) && $e->getCode() < 500) {
-                throw new ServiceException(__('[REST API] %1 error: %2', $serviceName, $body), $e, $e->getCode());
+                throw new ServiceException(__('[REST API] %1 error: %2', $adapterName, $body), $e, $e->getCode());
             }
-            throw new HttpException(__('[REST API] %1', $serviceName), $e, $e->getCode());
+            throw new HttpException(__('[REST API] %1', $adapterName), $e, $e->getCode());
         } catch (Throwable $e) {
-            throw new HttpException(__('[REST API] %1', $serviceName), $e, $e->getCode());
+            throw new HttpException(__('[REST API] %1', $adapterName), $e, $e->getCode());
         }
     }
 
