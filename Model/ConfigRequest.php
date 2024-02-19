@@ -40,7 +40,8 @@ class ConfigRequest
     public function __construct(
         private ScopeConfigInterface $scopeConfig,
         private string $configName
-    ) {}
+    ) {
+    }
 
     /**
      * @return string
@@ -66,7 +67,7 @@ class ConfigRequest
             );
         }
 
-        return (int) $timeout;
+        return (int)$timeout;
     }
 
     /**
@@ -83,7 +84,7 @@ class ConfigRequest
             );
         }
 
-        return (int) $cacheLifetime;
+        return (int)$cacheLifetime;
     }
 
     /**
@@ -104,6 +105,6 @@ class ConfigRequest
             );
         }
 
-        return (bool) $debugEnabled;
+        return (bool)$debugEnabled;
     }
 }

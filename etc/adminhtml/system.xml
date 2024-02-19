@@ -29,7 +29,8 @@
                 <field id="cache_ttl" translate="label comment" type="text" sortOrder="2" showInDefault="1"
                        showInWebsite="0" showInStore="0" canRestore="1">
                     <label>Cache TTL</label>
-                    <comment><![CDATA[Default cache ttl for services in seconds, used only when cache is implemented]]></comment>
+                    <comment>
+                        <![CDATA[Default cache ttl for services in seconds, used only when cache is implemented]]></comment>
                 </field>
                 <field id="is_debug" translate="label comment" type="select" sortOrder="3" showInDefault="1"
                        showInWebsite="0" showInStore="0" canRestore="1">
