@@ -18,12 +18,12 @@ namespace Zepgram\Rest\Model;
 class AdapterNameResolver
 {
     /**
-     * @param RequestAdapter $requestAdapter
+     * @param string $requestAdapter
      * @return string
      */
-    public function getAdapterName(RequestAdapter $requestAdapter): string
+    public function getAdapterName(string $requestAdapter): string
     {
-        $string = trim($requestAdapter::class);
+        $string = trim($requestAdapter);
         $string = preg_replace('/[^a-zA-Z0-9]/', '_', $string);
         $parts = explode('_', $string);
         $lastPartIndex = count($parts) - 1;
