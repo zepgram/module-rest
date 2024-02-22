@@ -83,7 +83,8 @@ namespace My\Custom\Model\Api;
 use Zepgram\Rest\Exception\InternalException;
 use Zepgram\Rest\Exception\ExternalException;
 use Zepgram\Rest\Service\ApiPoolInterface;
-use Zepgram\Rest\Service\ApiProviderInterface;use Zepgram\Sales\Api\OrderRepositoryInterface;
+use Zepgram\Rest\Service\ApiProviderInterface;
+use Zepgram\Sales\Api\OrderRepositoryInterface;
 
 class ConsumerExample
 {
