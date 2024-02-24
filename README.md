@@ -10,7 +10,7 @@ leveraging Magento's built-in systems, Zepgram Rest simplifies the implementatio
 Zepgram Rest provides several key features to aid Magento developers in creating and managing RESTful services:
 - <b>Avoid Code Duplication:</b> Minimize repetitive code with a straightforward setup in di.xml. Implement your REST API integrations with just one class creation, streamlining the development process.
 - <b>Centralized Configuration:</b> Manage all your REST web services configurations in one place, ensuring consistency and ease of maintenance.
-- <b>Built-in Registry and Cache:</b> Take advantage of Magento's native registry and cache mechanisms to boost your API's performance and security. This feature helps in efficiently managing data retrieval and storage, reducing the load on your server.
+- <b>Built-in Registry and Cache:</b> Take advantage of Magento's native cache mechanisms and dedicated registry to boost your API's performance and security. This feature helps in efficiently managing data retrieval and storage, reducing the load on your server.
 - <b>Generic Logger:</b> Debugging is made effortless with an inclusive logging system. Enable the debug mode to log detailed information about your API calls, including parameters, requests, and responses, facilitating easier troubleshooting.
 - <b>Data Serialization:</b> Declare whether your requests and results should be JSON serialized or not. This flexibility prevents the need for multiple serializer implementations, accommodating various API requirements with ease.
 
