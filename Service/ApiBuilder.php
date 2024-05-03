@@ -136,6 +136,10 @@ class ApiBuilder
         } else {
             $options['body'] = $apiProvider->isJsonRequest() ? $this->serializer->serialize($body) : $body;
         }
+        $contentType = $requestAdapter->getHeaders()['Content-Type'] ?? null;
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            $options['form_params'] = $body;
+        }
         $options['headers'] = $requestAdapter->getHeaders();
         $options['verify'] = $apiProvider->isVerify();
         $options['http_errors'] = true;
