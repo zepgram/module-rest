@@ -187,6 +187,10 @@ class ApiProvider implements ApiProviderInterface
         } else {
             $options['body'] = $this->isJsonRequest() ? $this->serializer->serialize($body) : $body;
         }
+        $contentType = $headers['Content-Type'] ?? null;
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            $options['form_params'] = $body;
+        }
         $options['headers'] = $headers;
         $options['verify'] = $verify;
         $options['http_errors'] = true;
