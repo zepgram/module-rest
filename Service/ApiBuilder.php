@@ -139,6 +139,7 @@ class ApiBuilder
         $contentType = $requestAdapter->getHeaders()['Content-Type'] ?? null;
         if ($contentType === 'application/x-www-form-urlencoded') {
             $options['form_params'] = $body;
+            unset($options['body'], $options['query']);
         }
         $options['headers'] = $requestAdapter->getHeaders();
         $options['verify'] = $apiProvider->isVerify();
