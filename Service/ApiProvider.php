@@ -190,6 +190,7 @@ class ApiProvider implements ApiProviderInterface
         $contentType = $headers['Content-Type'] ?? null;
         if ($contentType === 'application/x-www-form-urlencoded') {
             $options['form_params'] = $body;
+            unset($options['body'], $options['query']);
         }
         $options['headers'] = $headers;
         $options['verify'] = $verify;
