@@ -313,6 +313,38 @@ class OrderDataExample
     }
 }
 ```
+## Log & Sensitive Data
+
+This module includes a built-in Monolog Processor: [SensitiveDataProcessor.php](Logger/SensitiveDataProcessor.php)
+Depending on your `MAGE_MODE` environment variable, data will be automatically obfuscated if log key contains those keys:
+- `password`
+- `username`
+- `user`
+- `token`
+- `key`
+- `secret`
+- `hash`
+- `hmac`
+- `sha`
+- `sign`
+- `authorization`
+- `jwt`
+- `access`
+- `auth`
+- `sso`
+- `passphrase`
+- `ssh`
+- `pin`
+- `cvv`
+- `ccv`
+- `cvc`
+- `card`
+
+This class can be customized with `di.xml` by:
+- Activating the processor with parameter `$isEnabled`, otherwise it will only be enabled if `MAGE_MODE === 'production'` 
+- Adding custom keys by using `$sensitiveKeys` parameter
+- Overriding the default keys by using `$overrideSensitiveKeys` parameter
+- Modify the placeholder for sensitive data by setting `$redactionPlaceholder`
 
 ## Issues & Improvements
 
