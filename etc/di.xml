@@ -24,6 +24,9 @@
             <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Zepgram\Rest\Logger\Handler</item>
             </argument>
+            <argument name="processors" xsi:type="array">
+                <item name="sensitive_data" xsi:type="object">Zepgram\Rest\Logger\SensitiveDataProcessor</item>
+            </argument>
         </arguments>
     </virtualType>
     <type name="Zepgram\Rest\Model\HttpClient">
@@ -33,7 +36,6 @@
     </type>
     <!-- preferences -->
     <preference for="Zepgram\Rest\Model\RequestInterface" type="Zepgram\Rest\Model\Request"/>
-    <preference for="Zepgram\Rest\Model\RequestAdapterInterface" type="Zepgram\Rest\Model\RequestAdapter"/>
     <preference for="Zepgram\Rest\Service\ApiProviderInterface" type="Zepgram\Rest\Service\ApiProvider"/>
     <preference for="Zepgram\Rest\Service\ApiPoolInterface" type="Zepgram\Rest\Service\ApiPool"/>
 </config>
