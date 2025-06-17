@@ -14,7 +14,7 @@
     "guzzlehttp/guzzle": "^7.0",
     "magento/framework": "^103.0.4",
     "zepgram/module-base": "~0.0.1",
-    "zepgram/module-json-schema": "~0.1.0"
+    "zepgram/module-json-schema": "~0.1.1"
   },
   "autoload": {
     "files": [
