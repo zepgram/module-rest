@@ -194,6 +194,6 @@ class ApiBuilder implements ResetAfterRequestInterface
 
     public function _resetState(): void
     {
-        $this->apiRequestRegistry = [];
+        $this->apiRequestRegistry = null;
     }
 }
