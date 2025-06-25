@@ -4,7 +4,7 @@
  *
  * @package    Zepgram\Rest\Service
  * @file       ApiProvider.php
- * @date       18 02 2024 09:59
+ * @date       25 06 2025 16:30
  *
  * @author     Benjamin Calef <zepgram@gmail.com>
  * @copyright  2024 Zepgram Copyright (c) (https://github.com/zepgram)
@@ -19,7 +19,9 @@ use Exception;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObject\Factory;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use Magento\Framework\ObjectManager\ResetAfterRequestInterface;
 use Magento\Framework\Serialize\SerializerInterface;
+use Qameta\Allure\Hook\AfterAttachmentWriteHookInterface;
 use Zepgram\Rest\Exception\ExternalException;
 use Zepgram\Rest\Exception\InternalException;
 use Zepgram\Rest\Exception\Technical\InvalidContractException;
@@ -35,7 +37,7 @@ use Zepgram\Rest\Model\RequestInterface;
 use Zepgram\Rest\Model\RequestInterfaceFactory;
 use Zepgram\Rest\Model\AdapterNameResolver;
 
-class ApiBuilder
+class ApiBuilder implements ResetAfterRequestInterface
 {
     /** @var array */
     private $apiRequestRegistry;
@@ -188,5 +190,10 @@ class ApiBuilder
                 throw new InvalidContractException(__($e->getMessage()), $e);
             }
         }
+    }
+
+    public function _resetState(): void
+    {
+        $this->apiRequestRegistry = [];
     }
 }
