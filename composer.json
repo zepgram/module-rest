@@ -2,7 +2,7 @@
   "name": "zepgram/module-rest",
   "description": "Technical module to industrialize API REST call with dependency injection pattern using Guzzle library",
   "type": "magento2-module",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "authors": [
     {
       "name": "Benjamin Calef",
@@ -10,9 +10,10 @@
     }
   ],
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "guzzlehttp/guzzle": "^7.0",
-    "magento/framework": "^103.0.7",
+    "monolog/monolog": "^3.0",
+    "magento/framework": "^103.0.8",
     "zepgram/module-base": "~0.0.1",
     "zepgram/module-json-schema": "^0.2.0"
   },
