@@ -21,7 +21,6 @@ use Magento\Framework\DataObject\Factory;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\ObjectManager\ResetAfterRequestInterface;
 use Magento\Framework\Serialize\SerializerInterface;
-use Qameta\Allure\Hook\AfterAttachmentWriteHookInterface;
 use Zepgram\Rest\Exception\ExternalException;
 use Zepgram\Rest\Exception\InternalException;
 use Zepgram\Rest\Exception\Technical\InvalidContractException;

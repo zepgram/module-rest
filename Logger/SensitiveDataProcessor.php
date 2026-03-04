@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Zepgram\Rest\Logger;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 class SensitiveDataProcessor implements ProcessorInterface
@@ -57,17 +58,16 @@ class SensitiveDataProcessor implements ProcessorInterface
         $this->sensitiveKeyPattern = '/' . implode('|', array_map('preg_quote', $this->sensitiveKeys)) . '/i';
     }
 
-    public function __invoke(array $record): array
+    public function __invoke(LogRecord $record): LogRecord
     {
         if (!$this->isEnabled) {
             return $record;
         }
 
-        foreach ($record as &$line) {
-            $line = $this->redactSensitiveData($line);
-        }
-
-        return $record;
+        return $record->with(
+            context: $this->redactSensitiveData($record->context),
+            extra: $this->redactSensitiveData($record->extra)
+        );
     }
 
     private function redactSensitiveData(mixed $data): mixed
